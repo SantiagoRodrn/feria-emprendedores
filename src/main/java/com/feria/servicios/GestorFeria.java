@@ -2,6 +2,7 @@ package com.feria.servicios;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.feria.categorias.Categoria;
 import com.feria.modelos.Emprendedor;
@@ -14,10 +15,18 @@ public class GestorFeria {
 
     private List<Emprendedor> emprendedores;
     private List<Venta> ventas;
+    private IServicioStock servicioStock;
 
     private GestorFeria() {
         emprendedores = new ArrayList<>();
         ventas = new ArrayList<>();
+        servicioStock = new ServicioStock();
+    }
+
+    GestorFeria(IServicioStock servicioStock) {
+        emprendedores = new ArrayList<>();
+        ventas = new ArrayList<>();
+        this.servicioStock = servicioStock;
     }
 
     static public GestorFeria getGestor() {
@@ -25,6 +34,10 @@ public class GestorFeria {
             singleton = new GestorFeria();
         }
         return singleton;
+    }
+
+    static void resetInstancia() {
+        singleton = null;
     }
 
     public void addEmprendedores(List<Emprendedor> emprendedores) {
@@ -45,11 +58,9 @@ public class GestorFeria {
 
     public int getTotalProductos() {
         int total = 0;
-
         for (Emprendedor emprendedor : emprendedores) {
             total += emprendedor.getProductos().size();
         }
-
         return total;
     }
 
@@ -61,24 +72,22 @@ public class GestorFeria {
             System.out.println("Emprendedor no creado");
             return null;
         }
-        
-        emprendedores.add(emprendedor);
 
+        emprendedores.add(emprendedor);
         System.out.println("Emprendedor registrado con " + emprendedor.getProductos().size() + " productos");
-        
+
         return emprendedor;
     }
 
-    public void registrarVenta(Venta venta) { 
+    public void registrarVenta(Venta venta) {
         try {
-            ServicioStock.actualizarStock( venta.getProducto(), 
-            venta.getCantidad() ); } 
-        catch (IllegalArgumentException e) { 
-            System.out.println("Stock insuficiente para hacer la transacción"); 
-            return; 
-        } 
-        ventas.add(venta); 
-        System.out.println( "Venta registrada. Nuevo stock: " + venta.getProducto().getStock() ); 
+            servicioStock.actualizarStock(venta.getProducto(), venta.getCantidad());
+        } catch (IllegalArgumentException e) {
+            System.out.println("Stock insuficiente para hacer la transacción");
+            return;
+        }
+        ventas.add(venta);
+        System.out.println("Venta registrada. Nuevo stock: " + venta.getProducto().getStock());
     }
 
     public List<Emprendedor> getEmprendedoresConStockBajo() {
@@ -104,8 +113,17 @@ public class GestorFeria {
                 System.out.println(recibo);
             }
         }
-        
         System.out.println("Total recaudado: $" + totalRecaudado);
+    }
+
+    public Optional<Emprendedor> buscarEmprendedorPorNombre(String nombre) {
+        if (nombre == null) return Optional.empty();
+        for (Emprendedor emprendedor : emprendedores) {
+            if (emprendedor.getNombre().equalsIgnoreCase(nombre)) {
+                return Optional.of(emprendedor);
+            }
+        }
+        return Optional.empty();
     }
 
     public List<Emprendedor> getEmprendedores() {

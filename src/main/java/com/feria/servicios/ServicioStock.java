@@ -2,9 +2,10 @@ package com.feria.servicios;
 
 import com.feria.modelos.Producto;
 
-abstract public class ServicioStock {
+public class ServicioStock implements IServicioStock {
 
-    static public void actualizarStock(Producto producto, int cantidad) {
+    @Override
+    public void actualizarStock(Producto producto, int cantidad) {
         producto.restarStock(cantidad);
     }
 }

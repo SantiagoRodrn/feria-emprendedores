@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mvn test *)",
+      "PowerShell(Get-Command mvn -ErrorAction SilentlyContinue)",
+      "PowerShell($env:MAVEN_HOME)",
+      "PowerShell($env:M2_HOME)",
+      "PowerShell(Get-ChildItem \"C:\\\\Program Files\\\\Eclipse Adoptium\" -ErrorAction SilentlyContinue; Get-ChildItem \"C:\\\\Program Files\\\\Java\" -ErrorAction SilentlyContinue; Get-ChildItem \"$env:USERPROFILE\\\\.m2\\\\wrapper\" -ErrorAction SilentlyContinue)"
+    ]
+  }
+}
